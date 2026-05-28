@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Soni Typing Tutor - Web Edition</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- =================== SETUP / LOGIN SCREEN =================== -->
+  <section id="screen-setup" class="screen active">
+    <div class="setup-card">
+      <h1>Typing Test</h1>
+      <p class="subtitle">NTPC / SSC / Court &amp; Steno Practice</p>
+
+      <label>Name
+        <input type="text" id="setup-name" placeholder="e.g. John Smith" />
+      </label>
+
+      <label>Roll Number
+        <input type="text" id="setup-roll" placeholder="e.g. 1000003165" />
+      </label>
+
+      <label>Exam Type
+        <select id="setup-exam">
+          <option value="ntpc-en">NTPC English Typing (RRB NTPC)</option>
+          <option value="ssc-en">SSC English Typing (CHSL/CGL)</option>
+          <option value="ssc-hi">SSC Hindi Typing (CHSL/CGL)</option>
+          <option value="court-en">Court English Typing</option>
+          <option value="court-hi">Court Hindi Typing</option>
+        </select>
+      </label>
+
+      <button id="setup-start" class="btn-primary">Start Practice</button>
+    </div>
+  </section>
+
+  <!-- =================== MAIN PRACTICE SCREEN =================== -->
+  <section id="screen-practice" class="screen">
+    <!-- App title bar -->
+    <header class="app-titlebar">
+      <span class="app-name" id="app-name">NTPC English Typing</span>
+      <span class="app-actions">
+        <button id="btn-min" title="Minimize">_</button>
+        <button id="btn-max" title="Maximize">▢</button>
+        <button id="btn-close" title="Close">✕</button>
+      </span>
+    </header>
+
+    <div class="title-band">
+      <h2 id="exam-date">Typing Test <span id="today-date"></span></h2>
+    </div>
+
+    <div class="sub-band">
+      <span id="exam-subtitle">RRB NTPC Exam 2022</span>
+      <a href="#" id="link-instructions">Instructions</a>
+    </div>
+
+    <!-- Group tabs + Hindi layout (only for Hindi) -->
+    <div class="tabs-row">
+      <div class="tabs">
+        <button class="tab active" data-group="1">Group 1</button>
+        <button class="tab" data-group="2">Group 2</button>
+        <button class="tab" data-group="3">Group 3</button>
+      </div>
+      <div class="hindi-layouts" id="hindi-layouts" hidden>
+        <span class="layout-label">Select Hindi Layout :</span>
+        <label><input type="radio" name="layout" value="remington-gail" /> Remington Gail</label>
+        <label><input type="radio" name="layout" value="inscript" checked /> Inscript</label>
+        <label><input type="radio" name="layout" value="remington-cbi" /> Remington CBI</label>
+      </div>
+      <div class="time-left" id="time-left-practice">Time Left :</div>
+    </div>
+
+    <!-- Top mode buttons -->
+    <div class="mode-bar">
+      <button id="btn-printout-mode" class="btn-mode">Go Printout Mode</button>
+      <button id="btn-add-exercise" class="btn-add-exercise">Add New Exercise</button>
+      <button id="btn-exam-mode" class="btn-mode">Go Exam Mode</button>
+    </div>
+
+    <div class="practice-grid">
+      <!-- LEFT: Font select -->
+      <aside class="left-panel">
+        <div class="panel-section">
+          <div class="panel-title">Select Font</div>
+          <label class="cb">
+            <input type="checkbox" id="opt-bold" /> Bold
+          </label>
+        </div>
+      </aside>
+
+      <!-- CENTER: source + controls + typing -->
+      <main class="center-panel">
+        <!-- Source paragraph -->
+        <div class="source-text" id="source-text"></div>
+
+        <!-- Controls row -->
+        <div class="controls-row">
+          <div class="ctl-group">
+            <span>Duration :</span>
+            <select id="duration-select">
+              <option value="5">5 Minutes</option>
+              <option value="10" selected>10 Minutes</option>
+              <option value="15">15 Minutes</option>
+              <option value="20">20 Minutes</option>
+            </select>
+          </div>
+          <div class="ctl-group ctl-info">
+            <span class="instruction-msg">Select test duration and start typing. Timer will start automatically</span>
+          </div>
+          <div class="ctl-group ctl-exercise">
+            <button id="ex-prev">&lt;&lt;</button>
+            <span class="ex-label">Exercise : <span id="ex-current">1</span>/<span id="ex-total">100</span></span>
+            <button id="ex-next">&gt;&gt;</button>
+          </div>
+          <div class="ctl-group ctl-font">
+            <button id="font-down">A-</button>
+            <span id="font-size-display">18</span>
+            <button id="font-up">A+</button>
+          </div>
+        </div>
+
+        <!-- Typing area -->
+        <textarea id="typing-input" class="typing-area" placeholder="Start typing here..."></textarea>
+      </main>
+
+      <!-- RIGHT: Settings panel -->
+      <aside class="right-panel">
+        <div class="user-card">
+          <div class="avatar">
+            <svg viewBox="0 0 64 64" width="48" height="48" aria-hidden="true">
+              <circle cx="32" cy="22" r="12" fill="#ccd"/>
+              <path d="M8 60 C 8 42 56 42 56 60 Z" fill="#ccd"/>
+            </svg>
+          </div>
+          <div class="user-info">
+            <div>NAME : <strong id="hud-name">DUMMY</strong></div>
+            <div>ROLL NUMBER : <strong id="hud-roll">000000</strong></div>
+          </div>
+        </div>
+
+        <div class="lang-row">
+          <button class="lang-btn active" data-lang="en">English</button>
+          <button class="lang-btn" data-lang="hi">Hindi</button>
+          <span class="move-tag">Move<br/><small>v1.00.04</small></span>
+        </div>
+
+        <div class="selected-lang">
+          Selected Language : <strong id="selected-lang-text">English (US)</strong>
+        </div>
+
+        <fieldset class="settings-group">
+          <legend>Backspace Options</legend>
+          <label><input type="radio" name="backspace" value="full" /> Full Backspace</label>
+          <label><input type="radio" name="backspace" value="word" /> One Word Backspace</label>
+          <label><input type="radio" name="backspace" value="off" checked /> Deactivate Backspace</label>
+        </fieldset>
+
+        <fieldset class="settings-group">
+          <legend>Highlight Options</legend>
+          <label><input type="radio" name="highlight" value="word" /> Word Highlight</label>
+          <label><input type="radio" name="highlight" value="word-error" checked /> Word + Error Highlight</label>
+          <label><input type="radio" name="highlight" value="none" /> No Highlight</label>
+          <label><input type="radio" name="highlight" value="letter" /> Letter Highlight</label>
+        </fieldset>
+
+        <fieldset class="settings-group">
+          <legend>Scrollbar Options</legend>
+          <label><input type="checkbox" id="opt-scrollbar" checked /> Show Scrollbar</label>
+          <label><input type="checkbox" id="opt-autoscroll" checked /> Auto Scroll</label>
+        </fieldset>
+
+        <fieldset class="settings-group">
+          <legend>Paragraph Settings</legend>
+          <label><input type="checkbox" id="opt-wordlimit" checked /> Apply Word Limit</label>
+          <input type="number" id="opt-wordcount" value="300" min="50" max="1500" />
+          <small>(min=50, max=1500)</small>
+        </fieldset>
+
+        <fieldset class="settings-group">
+          <legend>Word Processing Mode (NTPC/SSC/Court)</legend>
+          <label><input type="checkbox" id="opt-wordproc" checked /> Word Processor Mode<br/><small>(SSC, Court, Steno)</small></label>
+          <label><input type="checkbox" id="opt-paragraphs" checked /> Allow Paragraphs</label>
+          <label><input type="checkbox" id="opt-tabs" /> Allow Tabs</label>
+        </fieldset>
+
+        <button id="btn-submit" class="btn-submit">Submit</button>
+      </aside>
+    </div>
+  </section>
+
+  <!-- =================== EXAM MODE SCREEN =================== -->
+  <section id="screen-exam" class="screen">
+    <header class="exam-header">
+      <div class="exam-font-controls">
+        <button id="exam-font-down">A-</button>
+        <button id="exam-font-mid">A</button>
+        <button id="exam-font-up">A+</button>
+      </div>
+      <div class="exam-user">
+        <div class="exam-avatar">
+          <svg viewBox="0 0 64 64" width="40" height="40" aria-hidden="true">
+            <circle cx="32" cy="22" r="12" fill="#ddd"/>
+            <path d="M8 60 C 8 42 56 42 56 60 Z" fill="#ddd"/>
+          </svg>
+        </div>
+        <div class="exam-user-info">
+          <div>NAME : <strong id="exam-hud-name">DUMMY_1000003165</strong></div>
+          <div>ROLL NUMBER : <strong id="exam-hud-roll">1000003165</strong></div>
+        </div>
+      </div>
+      <h1 class="exam-title" id="exam-title">English Typing</h1>
+      <div class="exam-time">Time Left : <span id="exam-timer">--:--</span></div>
+    </header>
+
+    <main class="exam-main">
+      <div class="source-text exam-source" id="exam-source-text"></div>
+      <textarea id="exam-typing-input" class="typing-area exam-typing" placeholder="Start typing here..."></textarea>
+    </main>
+
+    <footer class="exam-footer">
+      <button id="btn-exit-exam" class="btn-exit">Exit Exam Mode</button>
+      <button id="btn-finish" class="btn-finish">Finish &amp; Submit</button>
+    </footer>
+  </section>
+
+  <!-- =================== RESULTS SCREEN =================== -->
+  <section id="screen-results" class="screen">
+    <div class="results-card">
+      <h1>Result</h1>
+      <p class="results-subtitle" id="results-subtitle"></p>
+
+      <div class="results-grid">
+        <div class="result-item">
+          <div class="result-label">Gross Speed</div>
+          <div class="result-value" id="r-gross"><span id="r-gross-num">0</span> WPM</div>
+        </div>
+        <div class="result-item">
+          <div class="result-label">Net Speed</div>
+          <div class="result-value" id="r-net"><span id="r-net-num">0</span> WPM</div>
+        </div>
+        <div class="result-item">
+          <div class="result-label">Accuracy</div>
+          <div class="result-value" id="r-accuracy"><span id="r-acc-num">0</span>%</div>
+        </div>
+        <div class="result-item">
+          <div class="result-label">Total Words</div>
+          <div class="result-value" id="r-totalwords">0</div>
+        </div>
+        <div class="result-item">
+          <div class="result-label">Correct Words</div>
+          <div class="result-value" id="r-correctwords">0</div>
+        </div>
+        <div class="result-item">
+          <div class="result-label">Incorrect Words</div>
+          <div class="result-value" id="r-incorrectwords">0</div>
+        </div>
+        <div class="result-item">
+          <div class="result-label">Total Keystrokes</div>
+          <div class="result-value" id="r-keystrokes">0</div>
+        </div>
+        <div class="result-item">
+          <div class="result-label">Backspace Used</div>
+          <div class="result-value" id="r-backspaces">0</div>
+        </div>
+        <div class="result-item">
+          <div class="result-label">Time Elapsed</div>
+          <div class="result-value" id="r-time">0:00</div>
+        </div>
+      </div>
+
+      <div class="results-comparison">
+        <h3>Your typing (errors highlighted)</h3>
+        <div class="diff-view" id="diff-view"></div>
+      </div>
+
+      <div class="results-actions">
+        <button id="btn-retake" class="btn-secondary">Retake Same Exercise</button>
+        <button id="btn-next-exercise" class="btn-secondary">Next Exercise</button>
+        <button id="btn-back-home" class="btn-primary">Back to Home</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- =================== INSTRUCTIONS MODAL =================== -->
+  <div id="modal-instructions" class="modal" hidden>
+    <div class="modal-card">
+      <h2>Instructions</h2>
+      <ol>
+        <li>Select your test duration before you begin typing.</li>
+        <li>The timer starts automatically with your first keystroke.</li>
+        <li>You may use the navigation arrows (&lt;&lt; / &gt;&gt;) to switch between exercises.</li>
+        <li>Choose your backspace policy on the right (Full / One word / Deactivated).</li>
+        <li>For Hindi exams, pick the correct keyboard layout (Inscript / Remington Gail / Remington CBI).</li>
+        <li>Click <strong>Submit</strong> when you finish, or wait for the timer to expire.</li>
+        <li>Words are evaluated against the source text. Speed is measured in WPM (5 keystrokes = 1 word).</li>
+      </ol>
+      <button id="modal-close" class="btn-primary">Got it</button>
+    </div>
+  </div>
+
+  <!-- =================== ADD EXERCISE MODAL =================== -->
+  <div id="modal-add-exercise" class="modal" hidden>
+    <div class="modal-card">
+      <h2>Add New Exercise</h2>
+      <p>Paste your custom paragraph below. It will be saved to this browser.</p>
+      <textarea id="custom-text" rows="10" placeholder="Paste paragraph here..."></textarea>
+      <div class="modal-actions">
+        <button id="custom-cancel" class="btn-secondary">Cancel</button>
+        <button id="custom-save" class="btn-primary">Save Exercise</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/exercises.js"></script>
+  <script src="js/hindi-layouts.js"></script>
+  <script src="js/typing-engine.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
