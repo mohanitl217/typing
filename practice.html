@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Practice — Typing Tutor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css" />
+  <style>
+    .practice-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      margin: 20px 0;
+    }
+    @media (min-width: 1024px) {
+      .practice-grid { grid-template-columns: 1fr 300px; }
+    }
+    .practice-main, .practice-side {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+    }
+    .practice-side .section-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 10px;
+    }
+    .practice-side fieldset {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      margin-bottom: 12px;
+    }
+    .practice-side legend {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      padding: 0 6px;
+    }
+    .practice-side label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 6px 0;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .top-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 14px;
+      padding: 12px;
+      background: var(--bg-soft);
+      border-radius: var(--radius);
+    }
+    .top-controls select, .top-controls input {
+      padding: 6px 10px;
+      border: 1px solid var(--border-strong);
+      border-radius: 6px;
+      font-size: 13px;
+    }
+    .top-controls .timer {
+      margin-left: auto;
+      background: var(--color-primary);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      font-size: 16px;
+    }
+    .source-area, .input-area {
+      width: 100%;
+      border: 2px solid var(--border-strong);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      font-size: 17px;
+      line-height: 1.7;
+      min-height: 200px;
+      max-height: 280px;
+      overflow-y: auto;
+      margin-bottom: 12px;
+      background: white;
+    }
+    .source-area { user-select: none; word-wrap: break-word; }
+    .source-area.hindi, .input-area.hindi { font-family: var(--font-hi); font-size: 19px; }
+    .source-area .word { display: inline-block; padding: 0 2px; margin: 0 1px; border-radius: 3px; }
+    .source-area .word.current { background: #fef3c7; }
+    .source-area .word.correct { background: #d1fae5; color: #065f46; }
+    .source-area .word.incorrect { background: #fee2e2; color: #991b1b; }
+    .input-area { background: #f0fdf4; border-color: var(--color-success); resize: vertical; font-family: inherit; }
+    .input-area:focus { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(79,70,229,0.15); }
+
+    .practice-tabs {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+    .practice-tabs .tab {
+      padding: 8px 14px;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .practice-tabs .tab.active {
+      background: var(--color-primary);
+      color: white;
+      border-color: var(--color-primary);
+    }
+    .ex-nav {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .ex-nav button {
+      background: white;
+      border: 1px solid var(--border-strong);
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .stats-grid-mini {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .stats-grid-mini .stat-mini {
+      background: var(--bg-soft);
+      padding: 8px;
+      border-radius: 6px;
+      text-align: center;
+      font-size: 12px;
+    }
+    .stats-grid-mini .stat-mini strong {
+      display: block;
+      font-size: 18px;
+      color: var(--color-primary);
+    }
+  </style>
+</head>
+<body>
+
+<nav class="topbar">
+  <div class="container topbar-inner">
+    <a href="index.html" class="brand">
+      <span class="brand-icon">⌨</span>
+      <span class="brand-text">Typing Tutor<small>Learn · Practice · Examine</small></span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="learn.html?lang=en&layout=qwerty" class="nav-link">Learn</a>
+      <a href="practice.html" class="nav-link active">Practice</a>
+      <a href="exam.html" class="nav-link">Exam Patterns</a>
+    </div>
+    <div class="topbar-actions">
+      <a href="admin.html" class="btn-ghost">Admin</a>
+    </div>
+  </div>
+</nav>
+
+<main class="container" style="padding: 20px 16px;">
+
+  <div class="practice-grid">
+    <!-- ===== Main practice area ===== -->
+    <div class="practice-main">
+      <div class="practice-tabs" id="exam-tabs">
+        <button class="tab active" data-exam="ssc-en">SSC English</button>
+        <button class="tab" data-exam="ssc-hi">SSC Hindi</button>
+        <button class="tab" data-exam="ntpc-en">NTPC English</button>
+        <button class="tab" data-exam="court-en">Court English</button>
+        <button class="tab" data-exam="court-hi">Court Hindi</button>
+      </div>
+
+      <div class="top-controls">
+        <span style="font-weight:600; font-size:13px;">Exercise</span>
+        <div class="ex-nav">
+          <button id="ex-prev">«</button>
+          <span id="ex-label" style="font-size:13px;">1 / 1</span>
+          <button id="ex-next">»</button>
+        </div>
+        <span style="font-weight:600; font-size:13px;">Duration</span>
+        <select id="duration-sel">
+          <option value="300">5 min</option>
+          <option value="600" selected>10 min</option>
+          <option value="900">15 min</option>
+          <option value="1200">20 min</option>
+        </select>
+        <button class="btn-secondary" id="btn-add-ex">+ Add Custom</button>
+        <button class="btn-secondary" id="btn-restart">⟳ Restart</button>
+        <button class="btn-primary" id="btn-submit">Submit</button>
+        <span class="timer" id="timer">--:--</span>
+      </div>
+
+      <div class="stats-grid-mini">
+        <div class="stat-mini"><strong id="live-wpm">0</strong>WPM</div>
+        <div class="stat-mini"><strong id="live-acc">100</strong>% Acc</div>
+        <div class="stat-mini"><strong id="live-prog">0</strong>% Done</div>
+        <div class="stat-mini"><strong id="live-err">0</strong> Errors</div>
+      </div>
+
+      <div class="source-area" id="source"></div>
+      <textarea class="input-area" id="input" placeholder="Click here and start typing..."></textarea>
+    </div>
+
+    <!-- ===== Side settings panel ===== -->
+    <div class="practice-side">
+      <div class="section-title">Settings</div>
+
+      <fieldset>
+        <legend>Backspace</legend>
+        <label><input type="radio" name="bs" value="full" checked /> Full Backspace</label>
+        <label><input type="radio" name="bs" value="word" /> One Word Back</label>
+        <label><input type="radio" name="bs" value="off" /> Disabled</label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Highlight</legend>
+        <label><input type="radio" name="hl" value="word-error" checked /> Word + Error</label>
+        <label><input type="radio" name="hl" value="word" /> Word Only</label>
+        <label><input type="radio" name="hl" value="none" /> None</label>
+      </fieldset>
+
+      <fieldset id="layout-fieldset" hidden>
+        <legend>Hindi Layout</legend>
+        <label><input type="radio" name="hi-layout" value="inscript" checked /> Mangal Inscript</label>
+        <label><input type="radio" name="hi-layout" value="remington-gail" /> Remington Gail</label>
+        <label><input type="radio" name="hi-layout" value="remington-cbi" /> Remington CBI</label>
+        <label><input type="radio" name="hi-layout" value="krutidev" /> KrutiDev / DevLys</label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Display</legend>
+        <label>Font Size
+          <select id="font-sel" style="padding:4px 8px; border:1px solid var(--border); border-radius:4px;">
+            <option value="15">Small</option>
+            <option value="17" selected>Medium</option>
+            <option value="22">Large</option>
+            <option value="28">XL</option>
+          </select>
+        </label>
+        <label><input type="checkbox" id="opt-bold" /> Bold</label>
+        <label><input type="checkbox" id="opt-autoscroll" checked /> Auto Scroll</label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Word Limit</legend>
+        <label><input type="checkbox" id="opt-limit" /> Apply Limit</label>
+        <input type="number" id="limit-val" min="50" max="1500" value="300" style="width:100%; padding:6px 8px; border:1px solid var(--border); border-radius:4px;" />
+        <small style="color:var(--text-muted); font-size:11px;">50–1500 words</small>
+      </fieldset>
+
+      <a href="exam.html" class="btn-primary" style="display:block; text-align:center; margin-top:10px;">Go to Exam Mode →</a>
+    </div>
+  </div>
+
+  <!-- ===== Result modal ===== -->
+  <div class="modal-overlay" id="result-modal" hidden>
+    <div class="modal-card">
+      <h2>Test Complete</h2>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-label">Gross WPM</div><div class="stat-value" id="m-gross">0</div></div>
+        <div class="stat-card"><div class="stat-label">Net WPM</div><div class="stat-value" id="m-net">0</div></div>
+        <div class="stat-card"><div class="stat-label">Accuracy</div><div class="stat-value" id="m-acc">0%</div></div>
+        <div class="stat-card"><div class="stat-label">Correct</div><div class="stat-value" id="m-cw">0</div></div>
+        <div class="stat-card"><div class="stat-label">Incorrect</div><div class="stat-value" id="m-iw">0</div></div>
+        <div class="stat-card"><div class="stat-label">Time</div><div class="stat-value" id="m-time">0:00</div></div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-secondary" id="m-retake">Retake</button>
+        <button class="btn-primary" id="m-close">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Add Exercise modal ===== -->
+  <div class="modal-overlay" id="add-modal" hidden>
+    <div class="modal-card">
+      <h2>Add Custom Exercise</h2>
+      <p style="color:var(--text-muted); margin-bottom:14px;">Paste your own paragraph below. It will be saved to this browser.</p>
+      <textarea id="custom-text" rows="8" style="width:100%; padding:10px; border:1px solid var(--border); border-radius:6px; font-family:inherit; font-size:14px;"></textarea>
+      <div class="modal-actions">
+        <button class="btn-secondary" id="custom-cancel">Cancel</button>
+        <button class="btn-primary" id="custom-save">Save</button>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="container footer-inner">
+    <p>© 2026 Typing Tutor</p>
+  </div>
+</footer>
+
+<script src="js/data.js"></script>
+<script src="js/keyboard.js"></script>
+<script src="js/practice.js"></script>
+</body>
+</html>
