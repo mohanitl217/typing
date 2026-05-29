@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Learn Typing — Typing Tutor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/keyboard.css" />
+</head>
+<body>
+
+<nav class="topbar">
+  <div class="container topbar-inner">
+    <a href="index.html" class="brand">
+      <span class="brand-icon">⌨</span>
+      <span class="brand-text">Typing Tutor<small>Learn · Practice · Examine</small></span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="learn.html?lang=en&layout=qwerty" class="nav-link active">Learn</a>
+      <a href="practice.html" class="nav-link">Practice</a>
+      <a href="exam.html" class="nav-link">Exam Patterns</a>
+    </div>
+    <div class="topbar-actions">
+      <a href="admin.html" class="btn-ghost">Admin</a>
+    </div>
+  </div>
+</nav>
+
+<main class="container" style="padding: 24px 16px;">
+
+  <!-- Layout selector bar -->
+  <div class="subgroup" style="margin-bottom:16px;">
+    <div class="subgroup-header">
+      <div>
+        <div class="subgroup-title" id="lesson-meta-title">Loading…</div>
+        <div style="font-size:13px; color:var(--text-muted);" id="lesson-meta-sub"></div>
+      </div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <select id="layout-switch" class="form-group" style="padding:8px 12px; border-radius:6px; border:1px solid var(--border-strong);">
+          <option value="qwerty">English - QWERTY</option>
+          <option value="krutidev">Hindi - KrutiDev / DevLys</option>
+          <option value="inscript">Hindi - Mangal Inscript</option>
+          <option value="remington-gail">Hindi - Remington Gail</option>
+          <option value="remington-cbi">Hindi - Remington CBI</option>
+        </select>
+        <button class="btn-secondary" id="btn-restart">Restart</button>
+        <a class="btn-secondary" href="practice.html">Switch to Test</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lesson stage -->
+  <div class="lesson-stage">
+    <!-- Main lesson content -->
+    <div class="lesson-main">
+      <div class="lesson-stats">
+        <div class="stat"><strong id="stat-wpm">0</strong>WPM</div>
+        <div class="stat"><strong id="stat-acc">100</strong>% Acc</div>
+        <div class="stat"><strong id="stat-progress">0</strong>% Done</div>
+        <div class="stat"><strong id="stat-errors">0</strong> Errors</div>
+      </div>
+
+      <div class="text-display" id="text-display"></div>
+      <textarea class="input-display" id="input-display" placeholder="Click here and start typing..." rows="3"></textarea>
+
+      <!-- Keyboard with hands -->
+      <div class="kbd-container">
+        <div class="kbd-with-hands">
+          <!-- Left hand -->
+          <div class="hand left-hand" aria-hidden="true">
+            <svg viewBox="0 0 100 140">
+              <g fill="#fde68a" stroke="#92400e" stroke-width="1.5">
+                <ellipse cx="50" cy="100" rx="30" ry="35"/>
+                <rect x="20" y="40" width="10" height="55" rx="5"/>
+                <rect x="33" y="25" width="10" height="70" rx="5"/>
+                <rect x="46" y="20" width="10" height="75" rx="5"/>
+                <rect x="59" y="25" width="10" height="70" rx="5"/>
+                <rect x="72" y="55" width="11" height="38" rx="5"/>
+              </g>
+            </svg>
+          </div>
+          <div class="kbd" id="kbd"></div>
+          <!-- Right hand -->
+          <div class="hand right-hand" aria-hidden="true">
+            <svg viewBox="0 0 100 140">
+              <g fill="#fde68a" stroke="#92400e" stroke-width="1.5">
+                <ellipse cx="50" cy="100" rx="30" ry="35"/>
+                <rect x="17" y="55" width="11" height="38" rx="5"/>
+                <rect x="31" y="25" width="10" height="70" rx="5"/>
+                <rect x="44" y="20" width="10" height="75" rx="5"/>
+                <rect x="57" y="25" width="10" height="70" rx="5"/>
+                <rect x="70" y="40" width="10" height="55" rx="5"/>
+              </g>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Finger color legend -->
+        <div class="finger-legend">
+          <span class="legend-swatch" style="--swatch:#fde68a">L Pinky</span>
+          <span class="legend-swatch" style="--swatch:#bef264">L Ring</span>
+          <span class="legend-swatch" style="--swatch:#6ee7b7">L Middle</span>
+          <span class="legend-swatch" style="--swatch:#93c5fd">L Index</span>
+          <span class="legend-swatch" style="--swatch:#d8b4fe">Thumbs</span>
+          <span class="legend-swatch" style="--swatch:#fca5a5">R Index</span>
+          <span class="legend-swatch" style="--swatch:#fdba74">R Middle</span>
+          <span class="legend-swatch" style="--swatch:#fcd34d">R Ring</span>
+          <span class="legend-swatch" style="--swatch:#fbbf24">R Pinky</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lesson list sidebar -->
+    <aside class="lesson-side">
+      <h3 style="font-size:16px; margin-bottom:12px;">Lessons</h3>
+      <div class="lesson-list" id="lesson-list"></div>
+      <div style="margin-top:14px; padding:12px; background:var(--bg-soft); border-radius:8px; font-size:12px; line-height:1.6; color:var(--text-secondary);">
+        <strong>Tip:</strong> Keep your fingers on the home row (asdf jkl;). Look at the screen — not the keyboard. The orange-glowing key shows what to press next.
+      </div>
+    </aside>
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="container footer-inner">
+    <p>© 2026 Typing Tutor</p>
+  </div>
+</footer>
+
+<script src="js/data.js"></script>
+<script src="js/keyboard.js"></script>
+<script src="js/learn.js"></script>
+</body>
+</html>

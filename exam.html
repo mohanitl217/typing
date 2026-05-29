@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Exam Pattern Test — Typing Tutor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css" />
+  <style>
+    .exam-screen {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      margin: 20px 0;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+    }
+    .exam-header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid var(--border);
+      margin-bottom: 16px;
+    }
+    .exam-title-block h2 { font-size: 22px; }
+    .exam-title-block p  { color: var(--text-muted); font-size: 13px; }
+    .timer-display {
+      background: var(--color-primary);
+      color: white;
+      padding: 12px 22px;
+      border-radius: var(--radius);
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      font-family: var(--font-mono);
+    }
+    .timer-display.danger { background: var(--color-danger); animation: pulse-red 1s infinite; }
+    @keyframes pulse-red { 50% { transform: scale(1.05); } }
+    .source-box, .input-box {
+      width: 100%;
+      border: 2px solid var(--border-strong);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      font-size: 17px;
+      line-height: 1.7;
+      min-height: 200px;
+      max-height: 280px;
+      overflow-y: auto;
+      margin-bottom: 12px;
+      background: white;
+    }
+    .source-box { user-select: none; word-wrap: break-word; }
+    .source-box.hindi, .input-box.hindi {
+      font-family: var(--font-hi);
+      font-size: 19px;
+    }
+    .source-box .word { display: inline-block; padding: 0 2px; margin: 0 1px; border-radius: 3px; }
+    .source-box .word.current { background: #fef3c7; }
+    .source-box .word.correct { background: #d1fae5; color: #065f46; }
+    .source-box .word.incorrect { background: #fee2e2; color: #991b1b; }
+    .input-box { background: #f0fdf4; border-color: var(--color-success); resize: vertical; font-family: inherit; }
+    .input-box:focus { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(79,70,229,0.15); }
+    .pattern-card { cursor: pointer; }
+    .controls-bar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+      padding: 12px;
+      background: var(--bg-soft);
+      border-radius: var(--radius);
+      align-items: center;
+    }
+    .controls-bar .ctl-label { font-weight: 500; font-size: 13px; color: var(--text-secondary); }
+    .controls-bar select, .controls-bar input { padding: 6px 10px; border-radius: 6px; border: 1px solid var(--border-strong); font-size: 13px; }
+  </style>
+</head>
+<body>
+
+<nav class="topbar">
+  <div class="container topbar-inner">
+    <a href="index.html" class="brand">
+      <span class="brand-icon">⌨</span>
+      <span class="brand-text">Typing Tutor<small>Learn · Practice · Examine</small></span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="learn.html?lang=en&layout=qwerty" class="nav-link">Learn</a>
+      <a href="practice.html" class="nav-link">Practice</a>
+      <a href="exam.html" class="nav-link active">Exam Patterns</a>
+    </div>
+    <div class="topbar-actions">
+      <a href="admin.html" class="btn-ghost">Admin</a>
+    </div>
+  </div>
+</nav>
+
+<main class="container" style="padding: 24px 16px;">
+
+  <!-- ==================== Pattern Selector ==================== -->
+  <section id="patterns-list">
+    <div class="hero" style="background:transparent; padding: 0 0 24px;">
+      <h1 style="font-size:32px;">Exam Pattern Tests</h1>
+      <p>Choose your target exam below. Each pattern uses the time limit, word count and sample paragraphs of the actual exam.</p>
+    </div>
+
+    <div class="subgroup">
+      <div class="subgroup-header">
+        <div class="subgroup-title" id="patterns-count">All Patterns</div>
+        <input id="pattern-search" type="text" placeholder="Search SSC, NTPC, MPHC..." style="padding:8px 12px; border:1px solid var(--border-strong); border-radius:6px; font-size:13px; min-width:220px;" />
+      </div>
+      <div class="card-grid" id="patterns-grid"></div>
+    </div>
+  </section>
+
+  <!-- ==================== Exam Stage ==================== -->
+  <section id="exam-stage" hidden>
+    <div class="exam-screen">
+      <div class="exam-header-bar">
+        <div class="exam-title-block">
+          <h2 id="exam-name">—</h2>
+          <p id="exam-meta-info">Duration · Words · Language</p>
+        </div>
+        <div class="timer-display" id="timer-display">--:--</div>
+      </div>
+
+      <div class="controls-bar">
+        <span class="ctl-label">Duration:</span>
+        <select id="duration-select">
+          <option value="300">5 min</option>
+          <option value="600" selected>10 min</option>
+          <option value="900">15 min</option>
+          <option value="1200">20 min</option>
+        </select>
+        <span class="ctl-label">Backspace:</span>
+        <select id="backspace-select">
+          <option value="off">Disabled</option>
+          <option value="word">One Word</option>
+          <option value="full" selected>Full</option>
+        </select>
+        <span class="ctl-label">Highlight:</span>
+        <select id="highlight-select">
+          <option value="word-error" selected>Word + Error</option>
+          <option value="word">Word Only</option>
+          <option value="none">None</option>
+        </select>
+        <span class="ctl-label">Font:</span>
+        <select id="font-select">
+          <option value="16">Small</option>
+          <option value="18" selected>Medium</option>
+          <option value="22">Large</option>
+        </select>
+        <button class="btn-secondary" id="btn-back">← Back to patterns</button>
+        <button class="btn-primary" id="btn-submit-exam">Submit</button>
+      </div>
+
+      <div class="source-box" id="source-box"></div>
+      <textarea class="input-box" id="input-box" placeholder="Click here and start typing... (timer starts on first keystroke)"></textarea>
+    </div>
+  </section>
+
+  <!-- ==================== Result ==================== -->
+  <section id="result-stage" hidden>
+    <div class="exam-screen">
+      <h2 style="text-align:center; margin-bottom:8px;">🎉 Test Complete</h2>
+      <p style="text-align:center; color:var(--text-muted); margin-bottom:24px;" id="result-meta">—</p>
+
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-label">Gross WPM</div><div class="stat-value" id="r-gross">0</div></div>
+        <div class="stat-card"><div class="stat-label">Net WPM</div><div class="stat-value" id="r-net">0</div></div>
+        <div class="stat-card"><div class="stat-label">Accuracy</div><div class="stat-value" id="r-acc">0%</div></div>
+        <div class="stat-card"><div class="stat-label">Total Words</div><div class="stat-value" id="r-tw">0</div></div>
+        <div class="stat-card"><div class="stat-label">Correct</div><div class="stat-value" id="r-cw">0</div></div>
+        <div class="stat-card"><div class="stat-label">Incorrect</div><div class="stat-value" id="r-iw">0</div></div>
+        <div class="stat-card"><div class="stat-label">Keystrokes</div><div class="stat-value" id="r-ks">0</div></div>
+        <div class="stat-card"><div class="stat-label">Time</div><div class="stat-value" id="r-time">0:00</div></div>
+      </div>
+
+      <h3 style="margin:24px 0 12px;">Word-by-word comparison</h3>
+      <div id="diff-view" style="background:var(--bg-soft); padding:16px; border-radius:8px; line-height:1.8; max-height:300px; overflow:auto; word-wrap:break-word;"></div>
+
+      <div style="display:flex; justify-content:center; gap:10px; margin-top:24px; flex-wrap:wrap;">
+        <button class="btn-secondary" id="btn-retake">Retake</button>
+        <button class="btn-primary" id="btn-back-list">← All Patterns</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container footer-inner">
+    <p>© 2026 Typing Tutor</p>
+  </div>
+</footer>
+
+<script src="js/data.js"></script>
+<script src="js/keyboard.js"></script>
+<script src="js/exam.js"></script>
+</body>
+</html>

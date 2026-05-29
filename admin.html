@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — Typing Tutor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css" />
+  <style>
+    .admin-shell { padding: 24px 16px; }
+    .admin-header {
+      background: linear-gradient(135deg, #1e293b, #334155);
+      color: white;
+      padding: 24px;
+      border-radius: var(--radius-lg);
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .admin-header h1 { font-size: 24px; }
+    .admin-header p { color: #cbd5e1; font-size: 13px; }
+    .table-wrap { overflow-x: auto; }
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-muted);
+      background: var(--bg-soft);
+      border-radius: var(--radius);
+    }
+    .actions-cell { display: flex; gap: 4px; flex-wrap: wrap; }
+    .actions-cell button {
+      padding: 4px 10px;
+      font-size: 12px;
+      border-radius: 4px;
+    }
+    .btn-icon {
+      background: var(--bg-soft);
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .btn-icon:hover { background: var(--bg-hover); }
+    .btn-icon.danger { color: var(--color-danger); }
+    .btn-icon.danger:hover { background: #fee2e2; }
+  </style>
+</head>
+<body>
+
+<nav class="topbar">
+  <div class="container topbar-inner">
+    <a href="index.html" class="brand">
+      <span class="brand-icon">⌨</span>
+      <span class="brand-text">Typing Tutor<small>Admin Console</small></span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="learn.html?lang=en&layout=qwerty" class="nav-link">Learn</a>
+      <a href="practice.html" class="nav-link">Practice</a>
+      <a href="exam.html" class="nav-link">Exam Patterns</a>
+    </div>
+    <div class="topbar-actions">
+      <button id="btn-logout" class="btn-ghost" hidden>Logout</button>
+    </div>
+  </div>
+</nav>
+
+<main class="container admin-shell">
+
+  <!-- =========== LOGIN PAGE =========== -->
+  <section id="login-screen">
+    <div class="form-card">
+      <h1>Admin Login</h1>
+      <p class="form-subtitle">Sign in to manage users, exercises and view attempts</p>
+
+      <div id="login-error" class="alert alert-error" hidden></div>
+
+      <div class="form-group">
+        <label for="login-user">Username</label>
+        <input id="login-user" type="text" placeholder="admin" autocomplete="username" />
+      </div>
+      <div class="form-group">
+        <label for="login-pass">Password</label>
+        <input id="login-pass" type="password" placeholder="••••••••" autocomplete="current-password" />
+        <div class="form-hint">Default: <code>admin</code> / <code>admin123</code> (you can change it after login)</div>
+      </div>
+      <button class="btn-primary" id="login-btn" style="width:100%; margin-top:8px;">Sign In</button>
+
+      <p style="text-align:center; margin-top:14px; font-size:12px; color:var(--text-muted);">
+        ← <a href="index.html">Back to Home</a>
+      </p>
+    </div>
+  </section>
+
+  <!-- =========== ADMIN DASHBOARD =========== -->
+  <section id="dashboard-screen" hidden>
+    <div class="admin-header">
+      <div>
+        <h1>Admin Dashboard</h1>
+        <p>Welcome back, <strong id="admin-display-name">admin</strong></p>
+      </div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <button class="btn-ghost" id="btn-export">⬇ Export Data</button>
+        <button class="btn-ghost" id="btn-import">⬆ Import</button>
+        <input type="file" id="import-file" accept="application/json" style="display:none" />
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-label">Users</div><div class="stat-value" id="stat-users">0</div></div>
+      <div class="stat-card"><div class="stat-label">Total Attempts</div><div class="stat-value" id="stat-attempts">0</div></div>
+      <div class="stat-card"><div class="stat-label">Custom Exercises</div><div class="stat-value" id="stat-exercises">0</div></div>
+      <div class="stat-card"><div class="stat-label">Avg WPM</div><div class="stat-value" id="stat-avgwpm">0</div></div>
+    </div>
+
+    <div class="tabs-bar">
+      <button class="tab-btn active" data-tab="users">Users</button>
+      <button class="tab-btn" data-tab="exercises">Exercises</button>
+      <button class="tab-btn" data-tab="attempts">Attempts</button>
+      <button class="tab-btn" data-tab="settings">Settings</button>
+    </div>
+
+    <!-- Users tab -->
+    <div class="tab-panel" data-panel="users">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
+        <h3>Users</h3>
+        <button class="btn-primary" id="btn-add-user">+ Add User</button>
+      </div>
+      <div class="table-wrap">
+        <table class="table" id="users-table">
+          <thead>
+            <tr>
+              <th>Roll No.</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Allowed Sections</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="users-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Exercises tab -->
+    <div class="tab-panel" data-panel="exercises" hidden>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
+        <h3>Exercises by Section</h3>
+        <button class="btn-primary" id="btn-add-ex-admin">+ Add Exercise</button>
+      </div>
+      <div style="margin-bottom: 12px;">
+        <select id="ex-section-filter" style="padding:8px 12px; border:1px solid var(--border-strong); border-radius:6px;"></select>
+      </div>
+      <div class="table-wrap">
+        <table class="table" id="ex-table">
+          <thead>
+            <tr>
+              <th style="width:60px;">#</th>
+              <th>Excerpt</th>
+              <th style="width:90px;">Words</th>
+              <th style="width:120px;">Source</th>
+              <th style="width:120px;">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="ex-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Attempts tab -->
+    <div class="tab-panel" data-panel="attempts" hidden>
+      <h3 style="margin-bottom:16px;">Recent Attempts (Leaderboard)</h3>
+      <div class="table-wrap">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>When</th>
+              <th>Pattern</th>
+              <th>Net WPM</th>
+              <th>Gross WPM</th>
+              <th>Accuracy</th>
+              <th>Time</th>
+              <th>Words</th>
+            </tr>
+          </thead>
+          <tbody id="attempts-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Settings tab -->
+    <div class="tab-panel" data-panel="settings" hidden>
+      <h3 style="margin-bottom:16px;">Admin Settings</h3>
+      <div class="form-card" style="margin: 0; max-width: 540px;">
+        <div class="form-group">
+          <label>Change admin username</label>
+          <input id="set-user" type="text" />
+        </div>
+        <div class="form-group">
+          <label>Change admin password</label>
+          <input id="set-pass" type="password" placeholder="Leave empty to keep current" />
+        </div>
+        <button class="btn-primary" id="btn-save-creds">Save Credentials</button>
+
+        <hr style="margin:24px 0; border: none; border-top: 1px solid var(--border);" />
+
+        <div class="alert alert-info">
+          <strong>Reset Data</strong> — clears all users, attempts and custom exercises. Cannot be undone.
+        </div>
+        <button class="btn-danger" id="btn-reset" style="margin-top:8px;">Reset All Data</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========== USER MODAL =========== -->
+  <div class="modal-overlay" id="user-modal" hidden>
+    <div class="modal-card">
+      <h2 id="user-modal-title">Add User</h2>
+      <input type="hidden" id="user-modal-id" />
+      <div class="form-group">
+        <label>Roll Number *</label>
+        <input id="user-modal-roll" type="text" />
+      </div>
+      <div class="form-group">
+        <label>Name *</label>
+        <input id="user-modal-name" type="text" />
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input id="user-modal-email" type="email" />
+      </div>
+      <div class="form-group">
+        <label>Password (for student login)</label>
+        <input id="user-modal-pass" type="text" placeholder="Auto-generated if empty" />
+      </div>
+      <div class="form-group">
+        <label>Allowed Sections</label>
+        <div id="user-modal-sections" style="max-height: 200px; overflow:auto; background: var(--bg-soft); padding: 8px; border-radius: 6px;"></div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-secondary" id="user-cancel">Cancel</button>
+        <button class="btn-primary" id="user-save">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========== EXERCISE MODAL =========== -->
+  <div class="modal-overlay" id="ex-modal" hidden>
+    <div class="modal-card">
+      <h2 id="ex-modal-title">Add Exercise</h2>
+      <input type="hidden" id="ex-modal-id" />
+      <div class="form-group">
+        <label>Section</label>
+        <select id="ex-modal-section"></select>
+      </div>
+      <div class="form-group">
+        <label>Paragraph Text *</label>
+        <textarea id="ex-modal-text" rows="8"></textarea>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-secondary" id="ex-cancel">Cancel</button>
+        <button class="btn-primary" id="ex-save">Save</button>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="container footer-inner">
+    <p>© 2026 Typing Tutor — Admin Console</p>
+  </div>
+</footer>
+
+<script src="js/data.js"></script>
+<script src="js/admin.js"></script>
+</body>
+</html>
