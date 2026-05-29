@@ -1,0 +1,19 @@
+{
+  "name": "typing-tutor",
+  "version": "2.0.0",
+  "description": "Modern typing-test platform for NTPC / SSC / Court / state government exams",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview --port 4173",
+    "start": "vite preview --port 4173"
+  },
+  "devDependencies": {
+    "vite": "^5.4.10"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

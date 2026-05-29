@@ -111,15 +111,46 @@ typing/
 
 ## How to run
 
-No build step. Just open `index.html` in a browser:
-
+### Local development (Vite)
 ```bash
-# from the project root
-python3 -m http.server 8000
-# then visit http://localhost:8000
+npm install
+npm run dev          # development server with hot reload at http://localhost:5173
+npm run build        # production build → dist/
+npm run preview      # preview the built site at http://localhost:4173
 ```
 
-For Hindi rendering, the CDN-loaded `Noto Sans Devanagari` is used. If you're offline, the system fall-backs to `Mangal` (Windows) or any installed Devanagari font.
+### Quick preview without a build
+```bash
+python3 -m http.server 8000   # plain static server, http://localhost:8000
+```
+
+For Hindi rendering, the CDN-loaded `Noto Sans Devanagari` is used. If you're offline, the system falls back to `Mangal` (Windows) or any installed Devanagari font.
+
+---
+
+## Deploying to Hostinger
+
+This project is configured as a **Vite** project so Hostinger Horizons recognises it automatically.
+
+### Option A — Hostinger Horizons (Git deploy / framework detection)
+1. Connect your Hostinger Horizons project to this Git repo
+2. In **Settings**, make sure the framework is detected as **Vite**
+3. Hostinger will run:
+   - Install: `npm install`
+   - Build:   `npm run build`
+   - Output:  `dist/` (this is the default and is auto-detected)
+4. Click **Deploy** and the static `dist/` folder will be served
+
+### Option B — Hostinger Web Hosting (cPanel / hPanel) — no build needed
+1. Run `npm run build` locally
+2. Upload the **contents of `dist/`** (not the folder itself) to `public_html/` on your hosting account using File Manager or FTP
+3. Done — your site is live at your domain
+
+### Option C — Plain shared hosting without Node.js
+You can also upload the source files directly (no build step) — they work as plain HTML/CSS/JS:
+1. Zip the entire project folder (excluding `node_modules/`)
+2. Upload the contents to `public_html/`
+3. Visit your domain — it works!
 
 ---
 
